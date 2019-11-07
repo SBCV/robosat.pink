@@ -139,9 +139,12 @@ def tiles_to_geojson(tiles, union=True):
 
 
 def tile_image_from_file(path, bands=None):
-    """Return a multiband image numpy array, from an image file path"""
+    """Return a multiband image numpy array, from an image file path, or None."""
 
     try:
+        if path[-3:] == "png":  # PIL PNG Color Palette handling
+            return np.array(Image.open(os.path.expanduser(path)).convert("RGB"))
+
         raster = rasterio_open(os.path.expanduser(path))
         assert raster, "Unable to open {}".format(path)
     except:
