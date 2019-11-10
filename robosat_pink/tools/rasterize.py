@@ -78,8 +78,6 @@ def main(args):
                 feature_collection = json.load(geojson)
                 srid = geojson_srid(feature_collection)
 
-                feature_map = collections.defaultdict(list)
-
                 for i, feature in enumerate(tqdm(feature_collection["features"], ascii=True, unit="feature")):
                     feature_map = geojson_parse_feature(zoom, srid, feature_map, feature)
 
