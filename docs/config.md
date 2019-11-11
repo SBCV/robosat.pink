@@ -45,6 +45,9 @@
   # Model internal input tile size [W, H]
   #ts = [512, 512]
 
+  # Model internal input tile margin size
+  #ms = 16
+
   # Dataset loader name
   loader = "SemSegTiles"
 

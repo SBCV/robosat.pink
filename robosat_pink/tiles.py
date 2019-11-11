@@ -201,7 +201,7 @@ def tile_translate_from_file(root, tile, cover, bands=None):
     return image
 
 
-def tile_translate_to_file(root, tile, palette, label, margin=16):
+def tile_translate_to_file(root, tile, palette, label, margin):
 
     assert label.shape[0] % 2 == label.shape[1] % 2 == 0, "tile width and height must be an even number"
 
@@ -257,7 +257,7 @@ def tile_label_from_file(path, silent=True):
         assert silent, "Unable to open existing label: {}".format(path)
 
 
-def tile_label_to_file(root, tile, palette, label, append=False, translate=False, margin=16):
+def tile_label_to_file(root, tile, palette, label, append=False, translate=False, margin=0):
     """ Write a label (or a mask) tile on disk. """
 
     root = os.path.expanduser(root)

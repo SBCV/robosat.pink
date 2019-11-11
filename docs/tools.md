@@ -149,7 +149,8 @@ To kill GPU processes: rsp info --processes | xargs sudo kill -9
 ## rsp predict
 ```
 usage: rsp predict [-h] --checkpoint CHECKPOINT [--config CONFIG]
-                   [--cover COVER] [--translate] [--workers WORKERS] [--bs BS]
+                   [--cover COVER] [--passes {first,second,both}]
+                   [--workers WORKERS] [--bs BS]
                    [--web_ui_base_url WEB_UI_BASE_URL]
                    [--web_ui_template WEB_UI_TEMPLATE] [--no_web_ui]
                    dataset out
@@ -164,10 +165,10 @@ Inputs:
  --cover COVER                      path to csv tiles cover file, to filter tiles to predict [optional]
 
 Outputs:
+ --passes {first,second,both}       Predict passes [default: both]
  out                                output directory path [required]
 
 Data Loaders:
- --translate                        translate tiles coverage to avoid borders effect
  --workers WORKERS                  number of workers to load images [default: GPU x 2]
  --bs BS                            batch size value for data loader [default: 4]
 

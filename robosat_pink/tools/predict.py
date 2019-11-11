@@ -24,10 +24,11 @@ def add_parser(subparser, formatter_class):
     inp.add_argument("--cover", type=str, help="path to csv tiles cover file, to filter tiles to predict [optional]")
 
     out = parser.add_argument_group("Outputs")
+    choices = ["first", "second", "both"]
+    out.add_argument("--passes", type=str, default="both", choices=choices, help="Predict passes [default: both]")
     out.add_argument("out", type=str, help="output directory path [required]")
 
     dl = parser.add_argument_group("Data Loaders")
-    dl.add_argument("--translate", action="store_true", help="translate tiles coverage to avoid borders effect")
     dl.add_argument("--workers", type=int, help="number of workers to load images [default: GPU x 2]")
     dl.add_argument("--bs", type=int, default=4, help="batch size value for data loader [default: 4]")
 
@@ -37,6 +38,30 @@ def add_parser(subparser, formatter_class):
     ui.add_argument("--no_web_ui", action="store_true", help="desactivate Web UI output")
 
     parser.set_defaults(func=main)
+
+
+def predict(config, cover, args, palette, chkpt, nn, device, mode):
+    assert mode in ["predict", "predict_translate"], "Predict unknown mode"
+    loader_module = load_module("robosat_pink.loaders.{}".format(chkpt["loader"].lower()))
+    loader_predict = getattr(loader_module, chkpt["loader"])(config, chkpt["shape_in"][1:3], args.dataset, cover, mode=mode)
+
+    loader = DataLoader(loader_predict, batch_size=args.bs, num_workers=args.workers)
+    assert len(loader), "Empty predict dataset directory. Check your path."
+
+    tiled = []
+    for images, tiles in tqdm(loader, desc="Eval", unit="batch", ascii=True):
+
+        images = images.to(device)
+        for tile, prob in zip(tiles, torch.nn.functional.softmax(nn(images), dim=1).data.cpu().numpy()):
+            x, y, z = list(map(int, tile))
+            mask = np.around(prob[1:, :, :]).astype(np.uint8).squeeze()
+            if mode == "predict":
+                tile_label_to_file(args.out, mercantile.Tile(x, y, z), palette, mask)
+            if mode == "predict_translate":
+                tile_translate_to_file(args.out, mercantile.Tile(x, y, z), palette, mask, config["model"]["ms"])
+            tiled.append(mercantile.Tile(x, y, z))
+
+    return tiled
 
 
 def main(args):
@@ -73,33 +98,18 @@ def main(args):
 
     log.log("Model {} - UUID: {}".format(chkpt["nn"], chkpt["uuid"]))
 
-    mode = "predict" if not args.translate else "predict_translate"
-    loader_module = load_module("robosat_pink.loaders.{}".format(chkpt["loader"].lower()))
-    loader_predict = getattr(loader_module, chkpt["loader"])(config, chkpt["shape_in"][1:3], args.dataset, cover, mode=mode)
-
-    loader = DataLoader(loader_predict, batch_size=args.bs, num_workers=args.workers)
-    assert len(loader), "Empty predict dataset directory. Check your path."
-
-    tiled = []
     with torch.no_grad():  # don't track tensors with autograd during prediction
 
-        for images, tiles in tqdm(loader, desc="Eval", unit="batch", ascii=True):
+        tiled = []
+        if args.passes in ["first", "both"]:
+            log.log("== Predict First Pass ==")
+            tiled = predict(config, cover, args, palette, chkpt, nn, device, "predict")
 
-            images = images.to(device)
+        if args.passes in ["second", "both"]:
+            log.log("== Predict Second Pass ==")
+            predict(config, cover, args, palette, chkpt, nn, device, "predict_translate")
 
-            outputs = nn(images)
-            probs = torch.nn.functional.softmax(outputs, dim=1).data.cpu().numpy()
-
-            for tile, prob in zip(tiles, probs):
-                x, y, z = list(map(int, tile))
-                mask = np.around(prob[1:, :, :]).astype(np.uint8).squeeze()
-                if args.translate:
-                    tile_translate_to_file(args.out, mercantile.Tile(x, y, z), palette, mask)
-                else:
-                    tile_label_to_file(args.out, mercantile.Tile(x, y, z), palette, mask)
-                tiled.append(mercantile.Tile(x, y, z))
-
-    if not args.no_web_ui and not args.translate:
+    if not args.no_web_ui and tiled:
         template = "leaflet.html" if not args.web_ui_template else args.web_ui_template
         base_url = args.web_ui_base_url if args.web_ui_base_url else "."
         web_ui(args.out, base_url, tiled, tiled, "png", template)
