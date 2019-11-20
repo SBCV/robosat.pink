@@ -29,7 +29,7 @@ def add_parser(subparser, formatter_class):
     out.add_argument("out", type=str, help="output directory path [required]")
 
     dl = parser.add_argument_group("Data Loaders")
-    dl.add_argument("--workers", type=int, help="number of workers to load images [default: GPU x 2]")
+    dl.add_argument("--workers", type=int, help="number of workers to load images [default: batch size]")
     dl.add_argument("--bs", type=int, default=4, help="batch size value for data loader [default: 4]")
 
     ui = parser.add_argument_group("Web UI")
@@ -69,7 +69,7 @@ def main(args):
     check_channels(config)
     check_classes(config)
     palette = make_palette([classe["color"] for classe in config["classes"]])
-    args.workers = torch.cuda.device_count() * 2 if torch.device("cuda") and not args.workers else args.workers
+    args.workers = config["model"]["bs"] if not args.workers else args.workers
     cover = [tile for tile in tiles_from_csv(os.path.expanduser(args.cover))] if args.cover else None
 
     log = Logs(os.path.join(args.out, "log"))

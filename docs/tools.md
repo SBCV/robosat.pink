@@ -169,7 +169,7 @@ Outputs:
  out                                output directory path [required]
 
 Data Loaders:
- --workers WORKERS                  number of workers to load images [default: GPU x 2]
+ --workers WORKERS                  number of workers to load images [default: batch size]
  --bs BS                            batch size value for data loader [default: 4]
 
 Web UI:
