@@ -170,7 +170,7 @@ Outputs:
 
 Data Loaders:
  --workers WORKERS                  number of workers to load images [default: batch size]
- --bs BS                            batch size value for data loader [default: 4]
+ --bs BS                            if set override config file batch size value for data loader
 
 Web UI:
  --web_ui_base_url WEB_UI_BASE_URL  alternate Web UI base URL

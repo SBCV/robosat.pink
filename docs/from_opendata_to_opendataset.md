@@ -113,7 +113,7 @@ Predictive masks
 To create predictive masks from our first model, on the entire coverage:
 
 ```bash
-rsp predict --config ds/config.toml --checkpoint ds/model/checkpoint-00010.pth ds ds/masks
+rsp predict --config ds/config.toml --checkpoint ds/model/checkpoint-00010.pth --bs 4 ds ds/masks
 ```
 
 <a href="http://www.datapink.tools/rsp/opendata_to_opendataset/masks/"><img src="img/from_opendata_to_opendataset/masks.png" /></a>
@@ -202,7 +202,7 @@ Predict and compare
 And now to generate masks prediction, and compare composite images, as previously done:
 
 ```bash
-rsp predict --checkpoint ds/model_clean/checkpoint-00100.pth ds ds/masks_clean
+rsp predict --checkpoint ds/model_clean/checkpoint-00100.pth --bs 4 ds ds/masks_clean
 
 rsp compare --images ds/images ds/labels ds/masks_clean --mode stack ds/compare_clean
 

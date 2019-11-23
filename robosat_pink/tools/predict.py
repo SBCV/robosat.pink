@@ -30,7 +30,7 @@ def add_parser(subparser, formatter_class):
 
     dl = parser.add_argument_group("Data Loaders")
     dl.add_argument("--workers", type=int, help="number of workers to load images [default: batch size]")
-    dl.add_argument("--bs", type=int, default=4, help="batch size value for data loader [default: 4]")
+    dl.add_argument("--bs", type=int, help="if set override config file batch size value for data loader")
 
     ui = parser.add_argument_group("Web UI")
     ui.add_argument("--web_ui_base_url", type=str, help="alternate Web UI base URL")
@@ -69,7 +69,14 @@ def main(args):
     check_channels(config)
     check_classes(config)
     palette = make_palette([classe["color"] for classe in config["classes"]])
-    args.workers = config["model"]["bs"] if not args.workers else args.workers
+    if not args.bs:
+        try:
+            args.bs = config["model"]["bs"]
+        except:
+            pass
+
+    assert args.bs, "For rsp predict, model/bs must be set either in config file, or pass trought parameter --bs"
+    args.workers = args.bs if not args.workers else args.workers
     cover = [tile for tile in tiles_from_csv(os.path.expanduser(args.cover))] if args.cover else None
 
     log = Logs(os.path.join(args.out, "log"))
