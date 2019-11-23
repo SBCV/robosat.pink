@@ -66,6 +66,8 @@ def main(args):
         sys.exit()
 
     log = Logs(os.path.join(args.out, "log"))
+    csv_train = None if args.no_training else open(os.path.join(args.out, "training.csv"), mode="a")
+    csv_val = None if args.no_validation else open(os.path.join(args.out, "validation.csv"), mode="a")
 
     if torch.cuda.is_available():
         log.log("RoboSat.pink - training on {} GPUs, with {} workers".format(torch.cuda.device_count(), args.workers))
@@ -131,14 +133,15 @@ def main(args):
     val_loader = DataLoader(loader_val, batch_size=bs, shuffle=False, drop_last=True, num_workers=args.workers)
 
     if args.no_training:
-        process(val_loader, config, log, device, nn, criterion, "eval")
+        epoch = 0
+        process(val_loader, config, log, csv_val, epoch, device, nn, criterion, "eval")
         sys.exit()
 
     for epoch in range(resume + 1, args.epochs + 1):  # 1-N based
         UUID = uuid.uuid1()
         log.log("---{}Epoch: {}/{} -- UUID: {}".format(os.linesep, epoch, args.epochs, UUID))
 
-        process(train_loader, config, log, device, nn, criterion, "train", optimizer)
+        process(train_loader, config, log, csv_train, epoch, device, nn, criterion, "train", optimizer)
 
         try:  # https://github.com/pytorch/pytorch/issues/9176
             nn_doc = nn.module.doc
@@ -169,10 +172,10 @@ def main(args):
             torch.save(states, checkpoint_path)
 
         if not args.no_validation:
-            process(val_loader, config, log, device, nn, criterion, "eval")
+            process(val_loader, config, log, csv_val, epoch, device, nn, criterion, "eval")
 
 
-def process(loader, config, log, device, nn, criterion, mode, optimizer=None):
+def process(loader, config, log, csv, epoch, device, nn, criterion, mode, optimizer=None):
     def _process():
         num_samples = 0
         running_loss = 0
@@ -206,9 +209,18 @@ def process(loader, config, log, device, nn, criterion, mode, optimizer=None):
         assert num_samples > 0, "dataset contains training images and labels"
 
         log.log("{}{:.3f}".format("Loss:".ljust(25, " "), running_loss / num_samples))
+        csv_header = ['"Epoch"', '"Loss"'] if epoch == 1 else None
+        csv_line = [str(epoch)]
+        csv_line.append("{:.4f}".format(running_loss / num_samples))
         for classe in config["classes"][1:]:
             for metric, value in metrics.get().items():
                 log.log("{}{:.3f}".format((classe["title"] + " " + metric).ljust(25, " "), value))
+                csv_header.append('"{} {}"'.format(classe["title"], metric)) if epoch == 1 else None
+                csv_line.append("{:.3f}".format(value))
+
+        csv.write(",".join(csv_header) + os.linesep) if epoch == 1 else None
+        csv.write(",".join(csv_line) + os.linesep) if epoch > 0 else None
+        csv.flush()
 
     if mode == "train":
         nn.train()
