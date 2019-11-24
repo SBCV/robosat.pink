@@ -180,9 +180,8 @@ Web UI:
 ## rsp rasterize
 ```
 usage: rsp rasterize [-h] [--cover COVER] [--config CONFIG] --type TYPE
-                     [--pg PG] [--sqlite SQLITE] [--sql SQL]
-                     [--geojson GEOJSON [GEOJSON ...]] [--append] [--ts TS]
-                     [--web_ui_base_url WEB_UI_BASE_URL]
+                     [--pg PG] [--sql SQL] [--geojson GEOJSON [GEOJSON ...]]
+                     [--append] [--ts TS] [--web_ui_base_url WEB_UI_BASE_URL]
                      [--web_ui_template WEB_UI_TEMPLATE] [--no_web_ui]
                      out
 
@@ -194,7 +193,6 @@ Inputs [either --postgis or --geojson is required]:
  --config CONFIG                    path to config file [required]
  --type TYPE                        type of feature to rasterize (e.g Building, Road) [required]
  --pg PG                            PostgreSQL dsn using psycopg2 syntax (e.g 'dbname=db user=postgres')
- --sqlite SQLITE                    path to spatialite or GeoPackage file
  --sql SQL                          SQL to retrieve geometry features [e.g SELECT geom FROM a_table WHERE ST_Intersects(TILE_GEOM, geom)]
  --geojson GEOJSON [GEOJSON ...]    path to GeoJSON features files
 
