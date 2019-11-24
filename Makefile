@@ -132,7 +132,6 @@ check_tuto:
 	@mkdir tuto 
 	@echo "==================================================================================="
 	@echo "Checking 101"
-	@sudo su postgres -c 'dropdb tanzania' || :
 	@cd tuto && mkdir 101 && sed -n -e '/```bash/,/```/ p' ../docs/101.md | sed -e '/```/d' > 101/.CHECK && cd 101 && sh .CHECK && cd ..
 	@echo "==================================================================================="
 	@echo "Checking Tutorial OpenData to OpenDataset:"
