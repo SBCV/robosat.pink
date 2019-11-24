@@ -6,7 +6,7 @@ import mercantile
 
 from PIL import Image
 
-from robosat_pink.geojson import geojson_tile_burn, geojson_reproject
+from robosat_pink.geojson import geojson_tile_burn
 
 
 def get_parking():
@@ -47,14 +47,3 @@ class TestBurn(unittest.TestCase):
 
         # Tile does not have a parking feature in our fixture, the sum of pixels is zero.
         self.assertEqual(np.sum(rasterized), 0)
-
-
-class TestFeatureToMercator(unittest.TestCase):
-    def test_feature_to_mercator(self):
-        parking_fc = get_parking()
-
-        parking = parking_fc["features"][0]
-        mercator = next(geojson_reproject(parking, 4326, 3857))
-
-        self.assertEqual(mercator["type"], "Polygon")
-        self.assertEqual(int(mercator["coordinates"][0][0][0]), -9219757)

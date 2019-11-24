@@ -1,5 +1,5 @@
 from rasterio.crs import CRS
-from rasterio.warp import transform
+from rasterio.warp import transform_geom
 from rasterio.features import rasterize
 from rasterio.transform import from_bounds
 
@@ -9,30 +9,20 @@ from supermercado import burntiles
 from robosat_pink.tiles import tile_bbox
 
 
-def geojson_reproject(feature, srid_in, srid_out):
-    """Reproject GeoJSON Polygon feature coords
-       Inspired by: https://gist.github.com/dnomadb/5cbc116aacc352c7126e779c29ab7abe
-    """
-
-    if feature["geometry"]["type"] == "Polygon":
-        xys = (zip(*ring) for ring in feature["geometry"]["coordinates"])
-        xys = (list(zip(*transform(CRS.from_epsg(srid_in), CRS.from_epsg(srid_out), *xy))) for xy in xys)
-
-        yield {"coordinates": list(xys), "type": "Polygon"}
-
-
 def geojson_parse_feature(zoom, srid, feature_map, feature):
     def geojson_parse_polygon(zoom, srid, feature_map, polygon):
-
-        if srid != 4326:
-            polygon = [xy for xy in geojson_reproject({"type": "feature", "geometry": polygon}, srid, 4326)][0]
 
         for i, ring in enumerate(polygon["coordinates"]):  # GeoJSON coordinates could be N dimensionals
             polygon["coordinates"][i] = [[x, y] for point in ring for x, y in zip([point[0]], [point[1]])]
 
-        if polygon["coordinates"]:
+        if srid != 4326:
+            polygon = transform_geom(CRS.from_epsg(srid), CRS.from_epsg(4326), polygon)
+
+        try:
             for tile in burntiles.burn([{"type": "feature", "geometry": polygon}], zoom=zoom):
                 feature_map[mercantile.Tile(*tile)].append({"type": "feature", "geometry": polygon})
+        except:
+            pass
 
         return feature_map
 
@@ -45,6 +35,9 @@ def geojson_parse_feature(zoom, srid, feature_map, feature):
             for polygon in geometry["coordinates"]:
                 feature_map = geojson_parse_polygon(zoom, srid, feature_map, {"type": "Polygon", "coordinates": polygon})
 
+        return feature_map
+
+    if not feature or not feature["geometry"]:
         return feature_map
 
     if feature["geometry"]["type"] == "GeometryCollection":
@@ -71,12 +64,10 @@ def geojson_srid(feature_collection):
 def geojson_tile_burn(tile, features, srid, ts, burn_value=1):
     """Burn tile with GeoJSON features."""
 
-    shapes = ((geometry, burn_value) for feature in features for geometry in geojson_reproject(feature, srid, 3857))
-
-    bounds = tile_bbox(tile, mercator=True)
-    transform = from_bounds(*bounds, *ts)
+    crs = (CRS.from_epsg(srid), CRS.from_epsg(3857))
+    shapes = ((transform_geom(*crs, feature["geometry"]), burn_value) for feature in features)
 
     try:
-        return rasterize(shapes, out_shape=ts, transform=transform)
+        return rasterize(shapes, out_shape=ts, transform=from_bounds(*tile_bbox(tile, mercator=True), *ts))
     except:
         return None
