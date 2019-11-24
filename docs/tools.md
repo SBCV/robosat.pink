@@ -227,7 +227,7 @@ Alternate modes, as default is to create relative symlinks.:
  --delete                           delete tiles listed in cover
 
 Output:
- out                                output dir path [required for copy or move]
+ out                                output dir path [required for copy]
 
 Web UI:
  --web_ui_base_url WEB_UI_BASE_URL  alternate Web UI base URL

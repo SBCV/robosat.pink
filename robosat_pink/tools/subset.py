@@ -22,7 +22,7 @@ def add_parser(subparser, formatter_class):
     mode.add_argument("--delete", action="store_true", help="delete tiles listed in cover")
 
     out = parser.add_argument_group("Output")
-    out.add_argument("out", type=str, nargs="?", default=os.getcwd(), help="output dir path [required for copy or move]")
+    out.add_argument("out", type=str, nargs="?", default=os.getcwd(), help="output dir path [required for copy]")
 
     ui = parser.add_argument_group("Web UI")
     ui.add_argument("--web_ui_base_url", type=str, help="alternate Web UI base URL")
