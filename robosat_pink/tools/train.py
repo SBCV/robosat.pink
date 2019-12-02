@@ -106,9 +106,9 @@ def main(args):
         config, config["model"]["ts"], os.path.join(args.dataset, "validation"), None, "train"
     )
 
-    model_module = load_module("robosat_pink.models.{}".format(config["model"]["nn"].lower()))
+    nn_module = load_module("robosat_pink.nn.{}".format(config["model"]["nn"].lower()))
 
-    nn = getattr(model_module, config["model"]["nn"])(loader_train.shape_in, loader_train.shape_out, config).to(device)
+    nn = getattr(nn_module, config["model"]["nn"])(loader_train.shape_in, loader_train.shape_out, config).to(device)
     nn = torch.nn.DataParallel(nn)
     optimizer = Adam(nn.parameters(), lr=config["model"]["lr"])
 

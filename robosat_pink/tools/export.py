@@ -63,8 +63,8 @@ def main(args):
         assert args.shape_out, "--shape_out mandatory as not already in input .pth"
         shape_out = tuple(map(int, args.shape_out.split(",")))
 
-    model_module = load_module("robosat_pink.models.{}".format(nn_name.lower()))
-    nn = getattr(model_module, nn_name)(shape_in, shape_out).to("cpu")
+    nn_module = load_module("robosat_pink.nn.{}".format(nn_name.lower()))
+    nn = getattr(nn_module, nn_name)(shape_in, shape_out).to("cpu")
 
     print("RoboSat.pink - export model to {}".format(args.type), file=sys.stderr)
     print("Model: {}".format(nn_name, file=sys.stderr))
