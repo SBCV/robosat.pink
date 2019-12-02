@@ -43,7 +43,13 @@ class Albunet(nn.Module):
 
         super().__init__()
 
-        assert encoder in ["resnet50", "resnet101", "resnet152"], "Encoder value must be: resnet50, resnet101 or resnet152"
+        assert encoder in [
+            "resnet50",
+            "resnet101",
+            "resnet152",
+            "resnext50_32x4d",
+            "resnext101_32x8d",
+        ], "Encoder value must be: resnet50, resnet101, resnet152, resnext50_32x4d or resnext101_32x8d"
 
         try:
             pretrained = train_config["model"]["pretrained"]
