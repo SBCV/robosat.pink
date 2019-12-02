@@ -27,6 +27,7 @@ def add_parser(subparser, formatter_class):
     hp.add_argument("--lr", type=float, help="learning rate")
     hp.add_argument("--ts", type=str, help="tile size")
     hp.add_argument("--nn", type=str, help="neurals network name")
+    hp.add_argument("--encoder", type=str, help="encoder name")
     hp.add_argument("--loss", type=str, help="model loss")
     hp.add_argument("--da", type=str, help="kind of data augmentation")
     hp.add_argument("--dap", type=float, default=1.0, help="data augmentation probability [default: 1.0]")
@@ -53,6 +54,7 @@ def main(args):
     config["model"]["lr"] = args.lr if args.lr else config["model"]["lr"]
     config["model"]["ts"] = tuple(map(int, args.ts.split(","))) if args.ts else config["model"]["ts"]
     config["model"]["nn"] = args.nn if args.nn else config["model"]["nn"]
+    config["model"]["encoder"] = args.encoder if args.encoder else config["model"]["encoder"]
     config["model"]["loss"] = args.loss if args.loss else config["model"]["loss"]
     config["model"]["da"] = args.da if args.da else config["model"]["da"]
     config["model"]["dap"] = args.dap if args.dap else config["model"]["dap"]
@@ -106,9 +108,9 @@ def main(args):
         config, config["model"]["ts"], os.path.join(args.dataset, "validation"), None, "train"
     )
 
+    encoder = config["model"]["encoder"].lower()
     nn_module = load_module("robosat_pink.nn.{}".format(config["model"]["nn"].lower()))
-
-    nn = getattr(nn_module, config["model"]["nn"])(loader_train.shape_in, loader_train.shape_out, config).to(device)
+    nn = getattr(nn_module, config["model"]["nn"])(loader_train.shape_in, loader_train.shape_out, encoder, config).to(device)
     nn = torch.nn.DataParallel(nn)
     optimizer = Adam(nn.parameters(), lr=config["model"]["lr"])
 
@@ -163,6 +165,7 @@ def main(args):
             "state_dict": nn.state_dict(),
             "epoch": epoch,
             "nn": config["model"]["nn"],
+            "encoder": config["model"]["encoder"],
             "optimizer": optimizer.state_dict(),
             "loader": config["model"]["loader"],
         }

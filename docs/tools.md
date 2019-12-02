@@ -102,6 +102,7 @@ Web UI:
 usage: rsp export [-h] --checkpoint CHECKPOINT [--type {onnx,jit,pth}]
                   [--nn NN] [--loader LOADER] [--doc_string DOC_STRING]
                   [--shape_in SHAPE_IN] [--shape_out SHAPE_OUT]
+                  [--encoder ENCODER]
                   out
 
 optional arguments:
@@ -117,6 +118,7 @@ To set or override metadata pth parameters::
  --doc_string DOC_STRING  nn documentation abstract
  --shape_in SHAPE_IN      nn shape in (e.g 3,512,512)
  --shape_out SHAPE_OUT    nn shape_out  (e.g 2,512,512)
+ --encoder ENCODER        nn encoder  (e.g ResNet50)
 
 Output:
  out                      path to save export model to [required]
@@ -271,10 +273,10 @@ Web UI:
 ## rsp train
 ```
 usage: rsp train [-h] [--config CONFIG] [--loader LOADER] [--workers WORKERS]
-                 [--bs BS] [--lr LR] [--ts TS] [--nn NN] [--loss LOSS]
-                 [--da DA] [--dap DAP] [--epochs EPOCHS] [--resume]
-                 [--checkpoint CHECKPOINT] [--no_validation] [--no_training]
-                 [--saving SAVING]
+                 [--bs BS] [--lr LR] [--ts TS] [--nn NN] [--encoder ENCODER]
+                 [--loss LOSS] [--da DA] [--dap DAP] [--epochs EPOCHS]
+                 [--resume] [--checkpoint CHECKPOINT] [--no_validation]
+                 [--no_training] [--saving SAVING]
                  dataset out
 
 optional arguments:
@@ -291,6 +293,7 @@ Hyper Parameters [if set override config file value]:
  --lr LR                  learning rate
  --ts TS                  tile size
  --nn NN                  neurals network name
+ --encoder ENCODER        encoder name
  --loss LOSS              model loss
  --da DA                  kind of data augmentation
  --dap DAP                data augmentation probability [default: 1.0]

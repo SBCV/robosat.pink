@@ -98,7 +98,7 @@ def main(args):
 
     chkpt = torch.load(args.checkpoint, map_location=device)
     nn_module = load_module("robosat_pink.nn.{}".format(chkpt["nn"].lower()))
-    nn = getattr(nn_module, chkpt["nn"])(chkpt["shape_in"], chkpt["shape_out"]).to(device)
+    nn = getattr(nn_module, chkpt["nn"])(chkpt["shape_in"], chkpt["shape_out"], chkpt["encoder"].lower()).to(device)
     nn = torch.nn.DataParallel(nn)
     nn.load_state_dict(chkpt["state_dict"])
     nn.eval()

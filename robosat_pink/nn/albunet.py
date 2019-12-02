@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
-from torchvision.models import resnet50
+
+from robosat_pink.core import load_module
 
 
 class ConvRelu(nn.Module):
@@ -26,7 +27,7 @@ class DecoderBlock(nn.Module):
 
 
 class Albunet(nn.Module):
-    def __init__(self, shape_in, shape_out, train_config=None):
+    def __init__(self, shape_in, shape_out, encoder="resnet50", train_config=None):
         self.doc = """
             U-Net inspired encoder-decoder architecture with a ResNet encoder as proposed by Alexander Buslaev.
 
@@ -42,12 +43,15 @@ class Albunet(nn.Module):
 
         super().__init__()
 
+        assert encoder in ["resnet50", "resnet101", "resnet152"], "Encoder value must be: resnet50, resnet101 or resnet152"
+
         try:
             pretrained = train_config["model"]["pretrained"]
         except:
             pretrained = False
 
-        self.resnet = resnet50(pretrained=pretrained)
+        models = load_module("torchvision.models")
+        self.resnet = getattr(models, encoder)(pretrained=pretrained)
 
         assert num_channels
         if num_channels != 3:

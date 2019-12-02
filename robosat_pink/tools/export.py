@@ -21,6 +21,7 @@ def add_parser(subparser, formatter_class):
     pth.add_argument("--doc_string", type=str, help="nn documentation abstract")
     pth.add_argument("--shape_in", type=str, help="nn shape in (e.g 3,512,512)")
     pth.add_argument("--shape_out", type=str, help="nn shape_out  (e.g 2,512,512)")
+    pth.add_argument("--encoder", type=str, help="nn encoder  (e.g ResNet50)")
 
     out = parser.add_argument_group("Output")
     out.add_argument("out", type=str, help="path to save export model to [required]")
@@ -38,6 +39,12 @@ def main(args):
     except:
         assert args.nn, "--nn mandatory as not already in input .pth"
         nn_name = args.nn
+
+    try:
+        encoder = chkpt["encoder"]
+    except:
+        assert args.encoder, "--encoder mandatory as not already in input .pth"
+        encoder = args.encoder
 
     try:
         loader = chkpt["loader"]
@@ -64,7 +71,7 @@ def main(args):
         shape_out = tuple(map(int, args.shape_out.split(",")))
 
     nn_module = load_module("robosat_pink.nn.{}".format(nn_name.lower()))
-    nn = getattr(nn_module, nn_name)(shape_in, shape_out).to("cpu")
+    nn = getattr(nn_module, nn_name)(shape_in, shape_out, encoder.lower()).to("cpu")
 
     print("RoboSat.pink - export model to {}".format(args.type), file=sys.stderr)
     print("Model: {}".format(nn_name, file=sys.stderr))
@@ -85,6 +92,7 @@ def main(args):
             "state_dict": nn.state_dict(),
             "epoch": 0,
             "nn": nn_name,
+            "encoder": encoder,
             "optimizer": None,
             "loader": loader,
         }

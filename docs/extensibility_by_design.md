@@ -194,7 +194,7 @@ Callable with `rsp train --da Yourda`
 ## Use an alternate Neural Network Model ##
 To allows `rsp train` and `rsp predict` to use a model of your own:
 - If not alredy done, retrieve RoboSat.pink code source, and proceed to dev install: `make install`.
-- Create in `robosat_pink/models` directory a `yourmodelname.py` file.
+- Create in `robosat_pink/nn` directory a `yourmodelname.py` file.
 - This file must contains at least a `Model_name` class, with `__init__` and `forward` methods.
 - `shape_in` and `shape_out` as obvious parameters
 - Additional config information is restrain to train phase only (by design, to ensure ability to export model).

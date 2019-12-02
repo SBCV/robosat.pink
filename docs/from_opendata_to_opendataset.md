@@ -39,6 +39,7 @@ echo '
 
 [model]
   nn = "Albunet"
+  encoder = "Resnet50"
   loss = "Lovasz"
   loader = "SemSegTiles"
   da = "Strong"

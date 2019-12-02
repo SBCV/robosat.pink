@@ -30,7 +30,10 @@
   # Neurals Network name
   nn = "Albunet"
 
-  # Pretrained on ImageNet
+  # Encoder name
+  encoder = "Resnet50"
+
+  # Pretrained Encoder
   #pretrained = true
 
   # Loss function name
