@@ -31,7 +31,7 @@
   nn = "Albunet"
 
   # Encoder name
-  encoder = "Resnext50_32x4d"
+  encoder = "Wide_resnet50_2"
 
   # Pretrained Encoder
   #pretrained = true

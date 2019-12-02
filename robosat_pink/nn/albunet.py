@@ -40,8 +40,11 @@ class Albunet(nn.Module):
             self.doc += "https://arxiv.org/abs/1512.03385 - Deep Residual Learning for Image Recognition"
         elif encoder in ["resnext50_32x4d", "resnext101_32x8d"]:
             self.doc += "https://arxiv.org/pdf/1611.05431 - Aggregated Residual Transformations for DNN"
+        elif encoder in ["wide_resnet50_2", "wide_resnet101_2"]:
+            self.doc += "https://arxiv.org/abs/1605.07146 - Wide Residual Networks"
         else:
-            assert False, "Albunet, expects as encoder: Resnet50, Resnet101, Resnet152, Resnext50_32x4d or Resnext101_32x8d"
+            encoders = "Resnet50, Resnet101, Resnet152, Resnext50_32x4d, Resnext101_32x8d, Wide_resnet50_2, Wide_resnet101_2"
+            assert False, "Albunet, expects as encoder: " + encoders
 
         self.version = 1
 
