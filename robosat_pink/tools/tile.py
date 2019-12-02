@@ -80,7 +80,7 @@ def main(args):
         config = load_config(args.config)
         check_classes(config)
         colors = [classe["color"] for classe in config["classes"]]
-        palette = make_palette(*colors)
+        palette = make_palette(colors)
 
     assert len(args.ts.split(",")) == 2, "--ts expect width,height value (e.g 512,512)"
     width, height = list(map(int, args.ts.split(",")))
@@ -150,6 +150,12 @@ def main(args):
                     height=height,
                 )
                 data = warp_vrt.read(out_shape=(len(raster.indexes), width, height), window=warp_vrt.window(w, s, e, n))
+
+                if data.dtype == "uint16":  # GeoTiff could be 16 bits
+                    data = np.uint8(data / 256)
+                elif data.dtype == "uint32":  # or 32 bits
+                    data = np.uint8(data / (256 * 256))
+
                 image = np.moveaxis(data, 0, 2)  # C,H,W -> H,W,C
 
                 tile_key = (str(tile.x), str(tile.y), str(tile.z))

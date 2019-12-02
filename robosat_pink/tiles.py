@@ -15,6 +15,7 @@ import cv2
 
 import csv
 import json
+import rasterio
 import mercantile
 import supermercado
 
@@ -234,18 +235,36 @@ def tile_translate_to_file(root, tile, palette, label, margin):
 def tile_image_to_file(root, tile, image):
     """ Write an image tile on disk. """
 
+    H, W, C = image.shape
+
     root = os.path.expanduser(root)
     path = os.path.join(root, str(tile.z), str(tile.x)) if isinstance(tile, mercantile.Tile) else root
     os.makedirs(path, exist_ok=True)
 
-    ext = "tiff" if image.shape[2] > 3 else "webp"
-    filename = "{}.{}".format(str(tile.y), ext) if isinstance(tile, mercantile.Tile) else "{}.{}".format(tile, ext)
-    path = os.path.join(path, filename)
+    if C == 3:
+        path = (
+            os.path.join(path, "{}.webp".format(str(tile.y)))
+            if isinstance(tile, mercantile.Tile)
+            else os.path.join(path, "{}.webp".format(tile))
+        )
 
-    try:
-        cv2.imwrite(path, cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
-    except:
-        assert False, "Unable to write {}".format(path)
+        try:
+            cv2.imwrite(path, cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
+        except:
+            assert False, "Unable to write {}".format(path)
+
+    else:
+        if isinstance(tile, mercantile.Tile):
+            path = os.path.join(path, "{}.tiff".format(str(tile.y)))
+        else:
+            path = os.path.join(path, "{}.tiff".format(tile))
+
+        try:
+            rasterio.open(path, "w", driver="GTiff", compress="lzw", height=H, width=W, count=C, dtype=image.dtype).write(
+                np.moveaxis(image, 2, 0)  # H,W,C -> C,H,W
+            )
+        except:
+            assert False, "Unable to write {}".format(path)
 
 
 def tile_label_from_file(path, silent=True):
