@@ -35,6 +35,14 @@ class Albunet(nn.Module):
             - https://arxiv.org/pdf/1804.08024 - Angiodysplasia Detection and Localization Using DCNN
             - https://arxiv.org/abs/1806.00844 - TernausNetV2: Fully Convolutional Network for Instance Segmentation
         """
+
+        if encoder in ["resnet50", "resnet101", "resnet152"]:
+            self.doc += "https://arxiv.org/abs/1512.03385 - Deep Residual Learning for Image Recognition"
+        elif encoder in ["resnext50_32x4d", "resnext101_32x8d"]:
+            self.doc += "https://arxiv.org/pdf/1611.05431 - Aggregated Residual Transformations for DNN"
+        else:
+            assert False, "Albunet, expects as encoder: Resnet50, Resnet101, Resnet152, Resnext50_32x4d or Resnext101_32x8d"
+
         self.version = 1
 
         num_filters = 32
@@ -42,14 +50,6 @@ class Albunet(nn.Module):
         num_classes = shape_out[0]
 
         super().__init__()
-
-        assert encoder in [
-            "resnet50",
-            "resnet101",
-            "resnet152",
-            "resnext50_32x4d",
-            "resnext101_32x8d",
-        ], "Encoder value must be: resnet50, resnet101, resnet152, resnext50_32x4d or resnext101_32x8d"
 
         try:
             pretrained = train_config["model"]["pretrained"]

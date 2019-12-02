@@ -131,6 +131,7 @@ Bibliography:
 
 - <a href="https://arxiv.org/abs/1505.04597">U-Net: Convolutional Networks for Biomedical Image Segmentation</a>
 - <a href="https://arxiv.org/abs/1512.03385">Deep Residual Learning for Image Recognition</a>
+- <a href="https://arxiv.org/abs/1611.05431">Aggregated Residual Transformations for Deep Neural Networks</a>
 - <a href="https://arxiv.org/pdf/1804.08024.pdf">Angiodysplasia Detection and Localization Using Deep
 Convolutional Neural Networks</a>
 - <a href="https://arxiv.org/abs/1806.00844">TernausNetV2: Fully Convolutional Network for Instance Segmentation</a>
