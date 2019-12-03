@@ -133,8 +133,6 @@ Bibliography:
 - <a href="https://arxiv.org/abs/1512.03385">Deep Residual Learning for Image Recognition</a>
 - <a href="https://arxiv.org/abs/1611.05431">Aggregated Residual Transformations for Deep Neural Networks</a>
 - <a href="https://arxiv.org/abs/1605.07146">Wide Residual Networks</a>
-- <a href="https://arxiv.org/pdf/1804.08024.pdf">Angiodysplasia Detection and Localization Using Deep
-Convolutional Neural Networks</a>
 - <a href="https://arxiv.org/abs/1806.00844">TernausNetV2: Fully Convolutional Network for Instance Segmentation</a>
 - <a href="https://arxiv.org/abs/1705.08790">The Lovász-Softmax loss: A tractable surrogate for the optimization of the IoU measure in neural networks</a>
 - <a href="https://arxiv.org/abs/1809.06839">Albumentations: fast and flexible image augmentations</a>
