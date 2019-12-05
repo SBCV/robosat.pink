@@ -39,33 +39,34 @@ Web UI:
 ```
 ## rsp cover
 ```
-usage: rsp cover [-h] [--dir DIR] [--bbox BBOX] [--geojson GEOJSON]
-                 [--cover COVER] [--raster RASTER] [--sql SQL] [--pg PG]
-                 [--no_xyz] [--zoom ZOOM] [--extent] [--splits SPLITS]
+usage: rsp cover [-h] [--dir DIR] [--bbox BBOX]
+                 [--geojson GEOJSON [GEOJSON ...]] [--cover COVER]
+                 [--raster RASTER] [--sql SQL] [--pg PG] [--no_xyz]
+                 [--zoom ZOOM] [--extent] [--splits SPLITS]
                  [out [out ...]]
 
 optional arguments:
- -h, --help         show this help message and exit
+ -h, --help                       show this help message and exit
 
 Input [one among the following is required]:
- --dir DIR          plain tiles dir path
- --bbox BBOX        a lat/lon bbox: xmin,ymin,xmax,ymax or a bbox: xmin,xmin,xmax,xmax,EPSG:xxxx
- --geojson GEOJSON  a geojson file path
- --cover COVER      a cover file path
- --raster RASTER    a raster file path
- --sql SQL          SQL to retrieve geometry features [e.g SELECT geom FROM a_table]
+ --dir DIR                        plain tiles dir path
+ --bbox BBOX                      a lat/lon bbox: xmin,ymin,xmax,ymax or a bbox: xmin,xmin,xmax,xmax,EPSG:xxxx
+ --geojson GEOJSON [GEOJSON ...]  path to GeoJSON features files
+ --cover COVER                    a cover file path
+ --raster RASTER                  a raster file path
+ --sql SQL                        SQL to retrieve geometry features [e.g SELECT geom FROM a_table]
 
 Spatial DataBase [required with --sql input]:
- --pg PG            PostgreSQL dsn using psycopg2 syntax (e.g 'dbname=db user=postgres')
+ --pg PG                          PostgreSQL dsn using psycopg2 syntax (e.g 'dbname=db user=postgres')
 
 Tiles:
- --no_xyz           if set, tiles are not expected to be XYZ based.
+ --no_xyz                         if set, tiles are not expected to be XYZ based.
 
 Outputs:
- --zoom ZOOM        zoom level of tiles [required with --geojson or --bbox]
- --extent           if set, rather than a cover, output a bbox extent
- --splits SPLITS    if set, shuffle and split in several cover subpieces. [e.g 50/15/35]
- out                cover csv output paths [required except for extent]
+ --zoom ZOOM                      zoom level of tiles [required with --geojson or --bbox]
+ --extent                         if set, rather than a cover, output a bbox extent
+ --splits SPLITS                  if set, shuffle and split in several cover subpieces. [e.g 50/15/35]
+ out                              cover csv output paths [required except for extent]
 ```
 ## rsp download
 ```

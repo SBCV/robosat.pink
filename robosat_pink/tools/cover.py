@@ -24,7 +24,7 @@ def add_parser(subparser, formatter_class):
     inp = parser.add_argument_group("Input [one among the following is required]")
     inp.add_argument("--dir", type=str, help="plain tiles dir path")
     inp.add_argument("--bbox", type=str, help="a lat/lon bbox: xmin,ymin,xmax,ymax or a bbox: xmin,xmin,xmax,xmax,EPSG:xxxx")
-    inp.add_argument("--geojson", type=str, help="a geojson file path")
+    inp.add_argument("--geojson", type=str, nargs="+", help="path to GeoJSON features files")
     inp.add_argument("--cover", type=str, help="a cover file path")
     inp.add_argument("--raster", type=str, help="a raster file path")
     inp.add_argument("--sql", type=str, help="SQL to retrieve geometry features [e.g SELECT geom FROM a_table]")
@@ -88,13 +88,14 @@ def main(args):
 
     if args.geojson:
         print("RoboSat.pink - cover from {} at zoom {}".format(args.geojson, args.zoom), file=sys.stderr, flush=True)
-        with open(os.path.expanduser(args.geojson)) as f:
-            feature_collection = json.load(f)
-            srid = geojson_srid(feature_collection)
-            feature_map = collections.defaultdict(list)
+        feature_map = collections.defaultdict(list)
+        for geojson_file in args.geojson:
+            with open(os.path.expanduser(geojson_file)) as f:
+                feature_collection = json.load(f)
+                srid = geojson_srid(feature_collection)
 
-            for feature in tqdm(feature_collection["features"], ascii=True, unit="feature"):
-                feature_map = geojson_parse_feature(args.zoom, srid, feature_map, feature)
+                for feature in tqdm(feature_collection["features"], ascii=True, unit="feature"):
+                    feature_map = geojson_parse_feature(args.zoom, srid, feature_map, feature)
 
         cover = feature_map.keys()
 
