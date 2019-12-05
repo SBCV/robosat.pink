@@ -8,6 +8,11 @@ sudo apt install -y gdal-bin postgresql-11-postgis-2.5
 ```
 
 
+```
+createdb -U postgres tanzania
+psql -U postgres -c "CREATE EXTENSION postgis" tanzania
+```
+
 GeoJSON Cleanup and aggregation
 -------------------------------
 
