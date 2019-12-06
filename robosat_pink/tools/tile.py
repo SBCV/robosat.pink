@@ -40,6 +40,7 @@ def add_parser(subparser, formatter_class):
     help = "Skip tile if nodata pixel ratio > threshold. [default: 100]"
     out.add_argument("--nodata_threshold", type=int, default=100, choices=range(0, 101), metavar="[0-100]", help=help)
     out.add_argument("--keep_borders", action="store_true", help="keep tiles even if borders are empty (nodata)")
+    out.add_argument("--format", type=str, help="file format to save images in (e.g jpg)")
     out.add_argument("out", type=str, help="output directory path [required]")
 
     lab = parser.add_argument_group("Labels")
@@ -72,6 +73,8 @@ def is_nodata(image, nodata, threshold, keep_borders=False):
 
 
 def main(args):
+
+    assert not (args.label and args.format), "Format option not supported for label, output must be kept as png"
 
     if not args.workers:
         args.workers = min(os.cpu_count(), len(args.rasters))
@@ -111,15 +114,14 @@ def main(args):
             tiles_map[tile_key].append(path)
 
     if args.label:
-        ext = "png"
         bands = 1
     if not args.label:
         if bands == 1:
-            ext = "png"
+            ext = "png" if args.format is None else args.format
         if bands == 3:
-            ext = "webp"
+            ext = "webp" if args.format is None else args.format
         if bands > 3:
-            ext = "tiff"
+            ext = "tiff" if args.format is None else args.format
 
     tiles = []
     progress = tqdm(total=len(tiles_map), ascii=True, unit="tile")
@@ -175,7 +177,7 @@ def main(args):
                 x, y, z = map(int, tile)
 
                 if not args.label:
-                    tile_image_to_file(out, mercantile.Tile(x=x, y=y, z=z), image)
+                    tile_image_to_file(out, mercantile.Tile(x=x, y=y, z=z), image, ext=ext)
                 if args.label:
                     tile_label_to_file(out, mercantile.Tile(x=x, y=y, z=z), palette, image)
 

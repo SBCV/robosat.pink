@@ -232,7 +232,7 @@ def tile_translate_to_file(root, tile, palette, label, margin):
     tile_label_to_file(root, tiles["ll"][0], palette, translate, translate="ll", margin=margin)
 
 
-def tile_image_to_file(root, tile, image):
+def tile_image_to_file(root, tile, image, ext=None):
     """ Write an image tile on disk. """
 
     H, W, C = image.shape
@@ -242,10 +242,11 @@ def tile_image_to_file(root, tile, image):
     os.makedirs(path, exist_ok=True)
 
     if C == 3:
+        ext = ext if ext is not None else "webp"
         path = (
-            os.path.join(path, "{}.webp".format(str(tile.y)))
+            os.path.join(path, "{}.{}".format(str(tile.y), ext))
             if isinstance(tile, mercantile.Tile)
-            else os.path.join(path, "{}.webp".format(tile))
+            else os.path.join(path, "{}.{}".format(tile, ext))
         )
 
         try:
@@ -254,10 +255,11 @@ def tile_image_to_file(root, tile, image):
             assert False, "Unable to write {}".format(path)
 
     else:
+        ext = ext if ext is not None else "tiff"
         if isinstance(tile, mercantile.Tile):
-            path = os.path.join(path, "{}.tiff".format(str(tile.y)))
+            path = os.path.join(path, "{}.{}".format(str(tile.y, ext)))
         else:
-            path = os.path.join(path, "{}.tiff".format(tile))
+            path = os.path.join(path, "{}.{}".format(tile, ext))
 
         try:
             rasterio.open(path, "w", driver="GTiff", compress="lzw", height=H, width=W, count=C, dtype=image.dtype).write(

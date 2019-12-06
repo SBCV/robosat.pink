@@ -238,9 +238,9 @@ Web UI:
 ## rsp tile
 ```
 usage: rsp tile [-h] [--cover COVER] --zoom ZOOM [--ts TS] [--nodata [0-255]]
-                [--nodata_threshold [0-100]] [--keep_borders] [--label]
-                [--config CONFIG] [--workers WORKERS]
-                [--web_ui_base_url WEB_UI_BASE_URL]
+                [--nodata_threshold [0-100]] [--keep_borders]
+                [--format FORMAT] [--label] [--config CONFIG]
+                [--workers WORKERS] [--web_ui_base_url WEB_UI_BASE_URL]
                 [--web_ui_template WEB_UI_TEMPLATE] [--no_web_ui]
                 rasters [rasters ...] out
 
@@ -257,6 +257,7 @@ Output:
  --nodata [0-255]                   nodata pixel value, used by default to remove coverage border's tile [default: 0]
  --nodata_threshold [0-100]         Skip tile if nodata pixel ratio > threshold. [default: 100]
  --keep_borders                     keep tiles even if borders are empty (nodata)
+ --format FORMAT                    file format to save images in (e.g jpg)
  out                                output directory path [required]
 
 Labels:
